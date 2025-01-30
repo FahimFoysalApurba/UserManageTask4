@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="sty.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="toolbar mb-3 p-3 rounded-3 d-flex justify-content-between align-items-center" style="background-color: #e3f2fd;">
+            <div>
+                <button class="btn btn-danger" id="delete-btn" disabled onclick="deleteUsers()">
+                    <i class="material-icons">delete</i> Delete
+                </button>
+                <button class="btn btn-warning" id="block-btn" disabled onclick="blockUsers()">
+                    <i class="material-icons">block</i> Block
+                </button>
+                <button class="btn btn-success" id="unblock-btn" disabled onclick="unblockUsers()">
+                    <i class="material-icons">check_circle</i> Unblock
+                </button>
+                
+            </div>
+            <div id="UMD">User Management Dashboard</div>
+            <div id="name"></div>
+            <button class="btn btn-outline-primary btn-sm" onclick="logout()">Logout</button>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="text-uppercase mb-0">Manage Users</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all"></th>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Added In</th>
+                            <th>Last Login</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        fetch('/user')
+            .then(res => res.json())
+            .then(data => {
+                if (data.email) {
+                    
+                    document.getElementById('name').innerHTML = `Signed: <strong class="signed-in-user">${data.name}</strong>`;
+                } else {
+                    window.location.href = "login.html";
+                }
+            });
+
+        function loadUsers() {
+
+
+            fetch('/getUsers')
+    .then(response => response.json())
+    .then(users => {
+        const userTable = document.getElementById('userTable');
+        
+        userTable.innerHTML = users.map(user => {
+            // Format Added In to Day/Month/Year
+            const addedInDate = new Date(user['Added In']);
+            const formattedAddedInDate = `${addedInDate.getDate().toString().padStart(2, '0')}/${(addedInDate.getMonth() + 1).toString().padStart(2, '0')}/${addedInDate.getFullYear()}`;
+
+            // Format Last Login as a full date and time (you can adjust this if you want)
+            const lastLoginDate = new Date(user['Last Login']).toLocaleString();
+
+            return `
+                <tr class="${user.status === 'blocked' ? 'blocked' : ''}">
+                    <td><input type="checkbox" class="user-checkbox" value="${user.email}"></td>
+                    <td><strong>${user.name}</strong><p class="text-muted mb-0">${user.address}</p></td>
+                    <td><span class="text-muted">${user.email}</span></td>
+                    <td><p class="text-muted mb-0">${formattedAddedInDate}</p></td>
+                    <td><span class="text-muted">${lastLoginDate}</span></td>
+                    <td><span class="text-muted status">${user.status}</span></td>
+                </tr>
+            `;
+        }).join('');
+        
+        setupCheckboxListeners();
+    })
+    .catch(error => {
+        console.error("Error fetching users:", error);
+    });
+
+            /*
+
+
+    
+            fetch('/getUsers')
+                .then(res => res.json())
+                .then(users => {
+                    
+                    const userTable = document.getElementById('userTable');
+                    userTable.innerHTML = users.map(user => `
+                        <tr class="${user.status === 'blocked' ? 'blocked' : ''}">
+                            <td><input type="checkbox" class="user-checkbox" value="${user.email}"></td>
+                            <td><strong>${user.name}</strong><p class="text-muted mb-0">${user.address}</p></td>
+                            <td><span class="text-muted">${user.email}</span></td>
+                            <td><p class="text-muted mb-0">${user.Added_In}</p></td>
+                            <td><span class="text-muted">${user.Last_Login}</span></td>
+                            <td><span class="text-muted status">${user.status}</span></td>
+                        </tr>
+                    `).join('');
+                    setupCheckboxListeners();
+                });*/
+        }
+
+        function setupCheckboxListeners() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('select-all');
+            checkboxes.forEach(checkbox => checkbox.addEventListener('change', toggleToolbarButtons));
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
+                toggleToolbarButtons();
+            });
+        }
+
+        function getSelectedUsers() {
+            return [...document.querySelectorAll('.user-checkbox:checked')].map(checkbox => checkbox.value);
+        }
+
+        function toggleToolbarButtons() {
+            const selectedUsers = getSelectedUsers();
+            document.getElementById('delete-btn').disabled = selectedUsers.length === 0;
+            document.getElementById('block-btn').disabled = selectedUsers.length === 0;
+            document.getElementById('unblock-btn').disabled = selectedUsers.length === 0;
+        }
+
+        function deleteUsers() {
+            fetch('/deleteUsers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userIds: getSelectedUsers() })
+            }).then(() => loadUsers());
+        }
+
+        function blockUsers() {
+            fetch('/blockUsers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userIds: getSelectedUsers() })
+            }).then(() => loadUsers());
+        }
+
+        function unblockUsers() {
+            fetch('/unblockUsers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userIds: getSelectedUsers() })
+            }).then(() => loadUsers());
+        }
+
+        function logout() {
+            fetch('/logout', { method: 'POST' }).then(() => window.location.href = "login.html");
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,39 @@
+.gradient-custom-2 {
+
+    background: #fccb90;
+  
+    background: -webkit-linear-gradient(to right, #43c1f3, #05a0c7, #04e9dd, #da61b5);
+  
+    background: linear-gradient(to right, #7124ee, #366fd8, #1d8eb1, #5945b4);
+  }
+  
+  .gradient-form {
+    background-color: #eee;
+    height: 100vh !important;
+  }
+  
+  @media (min-width: 768px) {
+    .gradient-form {
+      height: 100vh !important;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .gradient-custom-2 {
+      border-top-right-radius: .3rem;
+      border-bottom-right-radius: .3rem;
+    }
+  }
+  .custom-center {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    
+    justify-content: center; 
+    height: 20%;
+    margin-left: 20%; 
+  }
+  
+  .centered-image {
+    width: 350px;
+  }
+  

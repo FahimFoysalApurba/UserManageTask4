@@ -1,0 +1,49 @@
+
+body {
+    background-color: #f5f6fa;
+    font-family: Arial, sans-serif;
+}
+.signed-in-user {
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: linear-gradient(90deg, rgba(255, 85, 85, 1) 0%, rgba(58, 123, 213, 1) 50%, rgba(0, 204, 255, 1) 100%);
+    -webkit-background-clip: text; /* Works for WebKit browsers */
+    background-clip: text; /* For modern browsers that support this */
+    color: transparent;
+    padding: 5px;
+    border-radius: 5px;
+}
+#UMD {
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(90deg, rgba(255, 85, 85, 1) 0%, rgba(58, 123, 213, 1) 50%, rgba(0, 204, 255, 1) 100%);
+    -webkit-background-clip: text; /* Works for WebKit browsers */
+    background-clip: text; /* For modern browsers that support this */
+    color: transparent;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+
+.toolbar {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+.card {
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+.btn {
+    border-radius: 5px;
+}
+.table thead {
+    background-color: #f1f1f1;
+}
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
